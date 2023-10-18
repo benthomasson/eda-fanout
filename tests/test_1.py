@@ -13,6 +13,7 @@ async def test_emitter_alone():
     for i in range(100):
         await queue.put(f'test{i}')
     await queue.put(None)
+    # And wait for the emitter to finish
     await emitter
 
 
@@ -23,7 +24,10 @@ async def test_emitter_with_source():
     emitter_args = {}
     source = asyncio.create_task(source1.main(queue, source_args))
     emitter = asyncio.create_task(emitter1.main(queue, emitter_args))
+    # Let the source finish
     await source
+    # Then send the None to the emitter
     await queue.put(None)
+    # And wait for the emitter to finish
     await emitter
 
